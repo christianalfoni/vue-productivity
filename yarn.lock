@@ -825,6 +825,11 @@ argparse@~1.0.9:
   dependencies:
     sprintf-js "~1.0.2"
 
+babel-plugin-transform-rename-import@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-rename-import/-/babel-plugin-transform-rename-import-2.3.0.tgz#5d9d645f937b0ca5c26a24b2510a06277b6ffd9b"
+  integrity sha512-dPgJoT57XC0PqSnLgl2FwNvxFrWlspatX2dkk7yjKQj5HHGw071vAcOf+hqW8ClqcBDMvEbm6mevn5yHAD8mlQ==
+
 balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
@@ -931,6 +936,13 @@ debug@^4.1.0, debug@^4.3.1, debug@^4.3.6:
   integrity sha512-Er2nc/H7RrMXZBFCEim6TCmMk02Z8vLC2Rbi1KEBggpo0fS6l0S1nnapwmIi3yW/+GOJap1Krg4w0Hg80oCqgQ==
   dependencies:
     ms "^2.1.3"
+
+dom-expressions@^0.38.5:
+  version "0.38.5"
+  resolved "https://registry.yarnpkg.com/dom-expressions/-/dom-expressions-0.38.5.tgz#83f328d8e0177fb49eb43844827c652e533950ed"
+  integrity sha512-GG5JHfGYV4+eGWlQTP7DS/tudytKY8F3Axp0WqypXszK7Fxt0Lp92jviy2cjjM3ekxC4QlagTh9OrzrLKAprOA==
+  dependencies:
+    babel-plugin-transform-rename-import "^2.3.0"
 
 electron-to-chromium@^1.5.4:
   version "1.5.18"
