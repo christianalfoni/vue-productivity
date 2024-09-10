@@ -1,4 +1,4 @@
-import { reactive, ref, type Ref } from "vue";
+import { ref, type Ref } from "vue";
 import { createComponent } from "vue-productivity";
 
 type Todo = {
@@ -47,7 +47,7 @@ function App(state: State) {
         onInput={(event) => {
           state.newTodoTitle.value = event.target!.value!;
         }}
-        onKeyDown={(event) => {
+        onkeydown={(event) => {
           if (event.key === "Enter") {
             state.addTodo();
           }

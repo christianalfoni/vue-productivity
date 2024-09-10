@@ -38,15 +38,16 @@
     "jsx-runtime"
   ],
   "scripts": {
-    "build": "vite build --outDir dist",
+    "build": "node build && vite build --outDir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "vite-plugin-dts": "^4.2.1",
-    "dom-expressions": "^0.38.5"
+    "dom-expressions": "^0.38.5",
+    "ts-morph": "^23.0.0",
+    "vite-plugin-dts": "^4.2.1"
   },
   "dependencies": {}
 }
