@@ -14,13 +14,39 @@ const sourceFile = project.addSourceFileAtPath(pathToTypes);
 
 // Add VNode import
 sourceFile.addImportDeclaration({
-  namedImports: "VNodeRef",
+  namedImports: ["VNodeRef", "VNode"],
   moduleSpecifier: "vue",
 });
 
 const interfaces = sourceFile.getDescendantsOfKind(
   SyntaxKind.InterfaceDeclaration
 );
+const types = sourceFile.getDescendantsOfKind(SyntaxKind.TypeAliasDeclaration);
+
+/*
+  Element
+*/
+const Element = types.find((type) => type.getName() === "Element");
+
+Element.replaceWithText("interface Element extends VNode {}");
+
+/*
+  ElementClass
+*/
+const ElementClass = interfaces.find(
+  (inter) => inter.getName() === "ElementClass"
+);
+
+ElementClass.addMember("$props: {}");
+
+/*
+  ElementAttributesProperty
+*/
+const ElementAttributesProperty = interfaces.find(
+  (inter) => inter.getName() === "ElementAttributesProperty"
+);
+
+ElementAttributesProperty.addMember("$props: {}");
 
 /*
   ElementChildrenAttribute
@@ -70,7 +96,7 @@ const childrenMember = DOMAttributes.getMembers().find(
 
 childrenMember.remove();
 
-DOMAttributes.addMember("slots?: Element | undefined");
+DOMAttributes.addMember("slots?: {}");
 
 /*
   CustomEventHandlersCamelCase
@@ -86,3 +112,14 @@ CustomEventHandlersCamelCase.getMembers().forEach((member) => {
 });
 
 fs.writeFileSync("./jsx-runtime/index.d.ts", sourceFile.print());
+
+// Fixes slots typing of components used with "defineComponent"
+fs.appendFileSync(
+  "./dist/index.d.ts",
+  `declare module "vue" {
+  export interface ComponentCustomProps {
+    slots?: {};
+  }
+}
+`
+);

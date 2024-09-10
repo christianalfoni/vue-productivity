@@ -1,5 +1,5 @@
 import { ref, type Ref } from "vue";
-import { createComponent } from "vue-productivity";
+import { createComponent, createProvider } from "vue-productivity";
 
 type Todo = {
   title: string;
@@ -13,11 +13,19 @@ type State = {
   toggleCompleted(index: number): void;
 };
 
+const [provide, inject] = createProvider<State>();
+
+export const useTodos = inject;
+
+const Test = createComponent(function Test({ slots }: { slots?: string }) {
+  return <h1>{slots}</h1>;
+});
+
 function Setup(): State {
   const newTodoTitle = ref("");
   const todos = ref<Todo[]>([]);
 
-  return {
+  return provide({
     newTodoTitle,
     get todos() {
       return todos.value;
@@ -32,16 +40,13 @@ function Setup(): State {
     toggleCompleted(index) {
       todos.value[index].completed = !todos.value[index].completed;
     },
-  };
-}
-
-function Test() {
-  return <div>hello</div>;
+  });
 }
 
 function App(state: State) {
   return (
     <div>
+      <Test></Test>
       <input
         value={state.newTodoTitle.value}
         onInput={(event) => {

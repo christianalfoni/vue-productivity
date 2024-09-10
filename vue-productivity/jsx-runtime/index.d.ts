@@ -1,5 +1,5 @@
 import * as csstype from "csstype";
-import { VNodeRef } from "vue";
+import { VNodeRef, VNode } from "vue";
 /**
  * Based on JSX types for Surplus and Inferno and adapted for `dom-expressions`.
  *
@@ -8,12 +8,17 @@ import { VNodeRef } from "vue";
  */
 type DOMElement = Element;
 export namespace JSX {
-    type Element = Node | ArrayElement | (string & {}) | number | boolean | null | undefined;
+    interface Element extends VNode {
+    }
     interface ArrayElement extends Array<Element> {
     }
     interface ElementClass {
+        // empty, libs can define requirements downstream
+        $props: {};
     }
     interface ElementAttributesProperty {
+        // empty, libs can define requirements downstream
+        $props: {};
     }
     interface ElementChildrenAttribute {
         slots: {};
@@ -155,7 +160,7 @@ export namespace JSX {
         onfocusin?: FocusEventHandlerUnion<T, FocusEvent> | undefined;
         onencrypted?: EventHandlerUnion<T, Event> | undefined;
         ondragexit?: EventHandlerUnion<T, DragEvent> | undefined;
-        slots?: Element | undefined;
+        slots?: {};
     }
     interface CustomEventHandlersCamelCase<T> {
         onAbort?: EventHandlerUnion<T, Event> | undefined;

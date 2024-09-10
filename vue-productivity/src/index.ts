@@ -1,17 +1,29 @@
-import { defineComponent, provide, inject, ref, useAttrs } from "vue";
+import {
+  defineComponent,
+  provide,
+  inject,
+  ref,
+  useAttrs,
+  ShallowRef,
+  shallowRef,
+} from "vue";
 
 function createSlotsProxy(propsProxy: any, slots: any) {
   let getSlots: any;
 
-  if (Object.keys(slots).length === 1) {
-    getSlots = () => slots.default();
+  const slotsCount = Object.keys(slots).length;
+
+  if (slotsCount === 0) {
+    getSlots = () => null;
+  } else if (slotsCount === 1) {
+    getSlots = () => slots.default() || null;
   } else {
     const slotsGetters = {};
 
     for (const key in slots) {
       Object.defineProperty(slotsGetters, key, {
         get() {
-          return slots[key]();
+          return slots[key]() || null;
         },
       });
     }
@@ -176,15 +188,19 @@ export function createObservablePromise<T>(
   return observablePromise;
 }
 
-export function promise<T>(): {
-  get promise(): ObservablePromise<T> | undefined;
-  set promise(newValue: Promise<T> | undefined);
-};
-export function promise<T>(promise: Promise<T>): {
+export type AsyncRef<T> = {
   get promise(): ObservablePromise<T>;
   set promise(newValue: Promise<T>);
 };
-export function promise<T>(promise?: Promise<T>) {
+
+export type LazyAsyncRef<T> = {
+  get promise(): ObservablePromise<T> | undefined;
+  set promise(newValue: Promise<T> | undefined);
+};
+
+export function asyncRef<T>(): LazyAsyncRef<T>;
+export function asyncRef<T>(promise: Promise<T>): AsyncRef<T>;
+export function asyncRef<T>(promise?: Promise<T>) {
   let abortController = new AbortController();
 
   const promiseValue = ref(
@@ -238,10 +254,16 @@ export type Query<T> = [
 
 export type QueryState = "idle" | "fetching" | "refetching";
 
-export function query<T>(fetchData: () => Promise<T>) {
+export function query<T>(fetchData: () => Promise<T>): [
+  ShallowRef<{
+    promise: ObservablePromise<T>;
+    state: QueryState;
+  }>,
+  () => Promise<void>
+] {
   let abortController = new AbortController();
 
-  const queryRef = ref<{
+  const queryRef = shallowRef<{
     promise: ObservablePromise<T>;
     state: QueryState;
   }>({
@@ -315,10 +337,21 @@ export type Mutation<T> = [
   (data: T) => ObservablePromise<void>
 ];
 
-export function mutation<T, U>(mutator: (data: U) => Promise<T>) {
+export function mutation<T, U>(
+  mutator: (data: U) => Promise<T>
+): [
+  ShallowRef<
+    | {
+        promise: ObservablePromise<void>;
+        data: U;
+      }
+    | undefined
+  >,
+  (data: U) => Promise<void>
+] {
   let abortController: AbortController | undefined;
 
-  const mutationRef = ref<
+  const mutationRef = shallowRef<
     | {
         promise: ObservablePromise<void>;
         data: U;
@@ -355,5 +388,5 @@ export function mutation<T, U>(mutator: (data: U) => Promise<T>) {
     return mutationRef.value!.promise;
   }
 
-  return [mutation, mutate] as const;
+  return [mutationRef, mutate];
 }
