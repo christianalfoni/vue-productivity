@@ -73,40 +73,24 @@ export function createComponent(...args: any[]): any {
   throw new Error("Invalid definition");
 }
 
-export function createStore<S extends Record<string, any>>(
+export function createProvider<S extends Record<string, any>>(
   setup: () => S
-): { Provider: () => any; provide: () => S; inject: () => S };
-export function createStore<
+): [provide: () => S, inject: () => S];
+export function createProvider<
   P extends Record<string, any>,
   S extends Record<string, any>
->(
-  setup: (props: P) => S
-): { Provider: (props: P) => any; provide: (props: P) => S; inject: () => S };
-export function createStore(...args: any[]) {
-  const symbol = Symbol(args[0].name);
+>(setup: (props: P) => S): [provide: (props: P) => S, inject: () => S];
+export function createProvider() {
+  const symbol = Symbol();
 
-  const Provider = defineComponent({
-    inheritAttrs: false,
-    setup(_, context) {
-      const state = args[0](useAttrs());
-
-      provide(symbol, state);
-
-      return () => context.slots.default?.();
-    },
-  });
-
-  return {
-    Provider,
-    provide: (props: any) => {
-      const state = args[0](props);
-
+  return [
+    (state: any) => {
       provide(symbol, state);
 
       return state;
     },
-    inject: () => inject(symbol),
-  } as any;
+    () => inject(symbol),
+  ] as any;
 }
 
 type PendingPromise<T> = Promise<T> & {
