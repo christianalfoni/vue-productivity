@@ -73,24 +73,17 @@ export function createComponent(...args: any[]): any {
   throw new Error("Invalid definition");
 }
 
-export function createProvider<S extends Record<string, any>>(
-  setup: () => S
-): [provide: () => S, inject: () => S];
-export function createProvider<
-  P extends Record<string, any>,
-  S extends Record<string, any>
->(setup: (props: P) => S): [provide: (props: P) => S, inject: () => S];
-export function createProvider() {
+export function createProvider<S extends Record<string, any>>() {
   const symbol = Symbol();
 
   return [
-    (state: any) => {
+    (state: S) => {
       provide(symbol, state);
 
       return state;
     },
-    () => inject(symbol),
-  ] as any;
+    () => inject(symbol) as S,
+  ] as const;
 }
 
 type PendingPromise<T> = Promise<T> & {
