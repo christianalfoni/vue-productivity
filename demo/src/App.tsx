@@ -17,8 +17,12 @@ const [provide, inject] = createProvider<State>();
 
 export const useTodos = inject;
 
-const Test = createComponent(function Test({ slots }: { slots?: string }) {
-  return <h1>{slots}</h1>;
+const Test = createComponent(function Test({
+  children,
+}: {
+  children?: string;
+}) {
+  return <h1>{children}</h1>;
 });
 
 function Setup(): State {
@@ -46,7 +50,7 @@ function Setup(): State {
 function App(state: State) {
   return (
     <div>
-      <Test></Test>
+      <Test>Hey</Test>
       <input
         value={state.newTodoTitle.value}
         onInput={(event) => {

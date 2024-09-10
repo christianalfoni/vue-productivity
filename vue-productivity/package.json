@@ -1,6 +1,6 @@
 {
   "name": "vue-productivity",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

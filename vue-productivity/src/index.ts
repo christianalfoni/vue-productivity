@@ -6,35 +6,38 @@ import {
   useAttrs,
   ShallowRef,
   shallowRef,
+  VNode,
 } from "vue";
 
-function createSlotsProxy(propsProxy: any, slots: any) {
-  let getSlots: any;
+export type VueNode = string | number | null | VNode;
+
+function createChildrenProxy(propsProxy: any, slots: any) {
+  let getChildren: any;
 
   const slotsCount = Object.keys(slots).length;
 
   if (slotsCount === 0) {
-    getSlots = () => null;
+    getChildren = () => null;
   } else if (slotsCount === 1) {
-    getSlots = () => slots.default() || null;
+    getChildren = () => slots.default() || null;
   } else {
-    const slotsGetters = {};
+    const childrenGetters = {};
 
     for (const key in slots) {
-      Object.defineProperty(slotsGetters, key, {
+      Object.defineProperty(childrenGetters, key, {
         get() {
           return slots[key]() || null;
         },
       });
     }
 
-    getSlots = () => slotsGetters;
+    getChildren = () => childrenGetters;
   }
 
   return new Proxy(propsProxy, {
     get(target, p) {
-      if (p === "slots") {
-        return getSlots();
+      if (p === "children") {
+        return getChildren();
       }
 
       return target[p];
@@ -64,7 +67,10 @@ export function createComponent(...args: any[]): any {
       inheritAttrs: false,
       name: args[0].name,
       setup(_, context) {
-        return args[0].bind(null, createSlotsProxy(useAttrs(), context.slots));
+        return args[0].bind(
+          null,
+          createChildrenProxy(useAttrs(), context.slots)
+        );
       },
     });
   }
@@ -74,7 +80,7 @@ export function createComponent(...args: any[]): any {
       name: args[1].name,
       inheritAttrs: false,
       setup(_, context) {
-        const propsSlotsProxy = createSlotsProxy(useAttrs(), context.slots);
+        const propsSlotsProxy = createChildrenProxy(useAttrs(), context.slots);
         const state = args[0](propsSlotsProxy);
 
         return args[1].bind(null, state, propsSlotsProxy);

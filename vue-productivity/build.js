@@ -57,8 +57,8 @@ const ElementChildrenAttribute = interfaces.find(
 
 // Remove "children"
 ElementChildrenAttribute.getMembers().forEach((member) => member.remove());
-// Add "slots"
-ElementChildrenAttribute.addMember("slots: {}");
+// Add "children"
+ElementChildrenAttribute.addMember("children: {}");
 
 /* 
   IntrinsicAttributes
@@ -96,7 +96,7 @@ const childrenMember = DOMAttributes.getMembers().find(
 
 childrenMember.remove();
 
-DOMAttributes.addMember("slots?: {}");
+DOMAttributes.addMember("children?: {}");
 
 /*
   CustomEventHandlersCamelCase
@@ -113,12 +113,12 @@ CustomEventHandlersCamelCase.getMembers().forEach((member) => {
 
 fs.writeFileSync("./jsx-runtime/index.d.ts", sourceFile.print());
 
-// Fixes slots typing of components used with "defineComponent"
+// Fixes children typing of components used with "defineComponent"
 fs.appendFileSync(
   "./dist/index.d.ts",
   `declare module "vue" {
   export interface ComponentCustomProps {
-    slots?: {};
+    children?: {};
   }
 }
 `

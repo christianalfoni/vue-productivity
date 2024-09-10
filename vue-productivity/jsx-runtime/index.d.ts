@@ -21,7 +21,7 @@ export namespace JSX {
         $props: {};
     }
     interface ElementChildrenAttribute {
-        slots: {};
+        children: {};
     }
     interface EventHandler<T, E extends Event> {
         (e: E & {
@@ -160,7 +160,7 @@ export namespace JSX {
         onfocusin?: FocusEventHandlerUnion<T, FocusEvent> | undefined;
         onencrypted?: EventHandlerUnion<T, Event> | undefined;
         ondragexit?: EventHandlerUnion<T, DragEvent> | undefined;
-        slots?: {};
+        children?: {};
     }
     interface CustomEventHandlersCamelCase<T> {
         onAbort?: EventHandlerUnion<T, Event> | undefined;
