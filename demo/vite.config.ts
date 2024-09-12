@@ -9,6 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      vue: fileURLToPath(new URL("../../core/packages/vue", import.meta.url)),
     },
   },
 });

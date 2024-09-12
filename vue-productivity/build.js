@@ -14,7 +14,7 @@ const sourceFile = project.addSourceFileAtPath(pathToTypes);
 
 // Add VNode import
 sourceFile.addImportDeclaration({
-  namedImports: ["VNodeRef", "VNode"],
+  namedImports: ["VNodeRef", "VNode", "PublicProps"],
   moduleSpecifier: "vue",
 });
 
@@ -29,15 +29,6 @@ const types = sourceFile.getDescendantsOfKind(SyntaxKind.TypeAliasDeclaration);
 const Element = types.find((type) => type.getName() === "Element");
 
 Element.replaceWithText("interface Element extends VNode {}");
-
-/*
-  ElementClass
-*/
-const ElementClass = interfaces.find(
-  (inter) => inter.getName() === "ElementClass"
-);
-
-ElementClass.addMember("$props: {}");
 
 /*
   ElementAttributesProperty
@@ -69,9 +60,10 @@ const IntrinsicAttributes = interfaces.find(
 
 // Remove "ref"
 IntrinsicAttributes.getMembers().forEach((member) => member.remove());
-// Add "key" and "ref"
-IntrinsicAttributes.addMember("key?: PropertyKey");
-IntrinsicAttributes.addMember("ref?: VNodeRef");
+
+IntrinsicAttributes.addExtends("PublicProps");
+
+// IntrinsicAttributes.addMember("ref?: VNodeRef");
 
 // CustomAttributes
 const CustomAttributes = interfaces.find(
@@ -80,9 +72,9 @@ const CustomAttributes = interfaces.find(
 
 // Remove "ref", "classList" and "$ServerOnly"
 CustomAttributes.getMembers().forEach((member) => member.remove());
-// Add "key" and "ref"
-CustomAttributes.addMember("key?: PropertyKey");
-CustomAttributes.addMember("ref?: VNodeRef");
+
+CustomAttributes.addExtends("PublicProps");
+// CustomAttributes.addMember("ref?: VNodeRef");
 
 /*
   DOMAttributes

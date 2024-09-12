@@ -1,6 +1,6 @@
 {
   "name": "vue-productivity",
-  "version": "1.2.7",
+  "version": "1.3.0",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -38,7 +38,7 @@
     "jsx-runtime"
   ],
   "scripts": {
-    "build": "vite build --outDir dist && node build",
+    "build": "vite build --outDir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -49,5 +49,7 @@
     "ts-morph": "^23.0.0",
     "vite-plugin-dts": "^4.2.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "csstype": "^3.1.3"
+  }
 }

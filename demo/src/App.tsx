@@ -1,35 +1,16 @@
-import { ref, type Ref } from "vue";
-import { createComponent, createProvider } from "vue-productivity";
+import { ref } from "vue";
+import { createComponent, type VueNode } from "vue-productivity";
 
 type Todo = {
   title: string;
   completed: boolean;
 };
 
-type State = {
-  newTodoTitle: Ref<string>;
-  todos: Todo[];
-  addTodo(): void;
-  toggleCompleted(index: number): void;
-};
-
-const [provide, inject] = createProvider<State>();
-
-export const useTodos = inject;
-
-const Test = createComponent(function Test({
-  children,
-}: {
-  children?: string;
-}) {
-  return <h1>{children}</h1>;
-});
-
-function Setup(): State {
+function Setup(props: { initialCount: number }) {
   const newTodoTitle = ref("");
   const todos = ref<Todo[]>([]);
 
-  return provide({
+  return {
     newTodoTitle,
     get todos() {
       return todos.value;
@@ -41,28 +22,27 @@ function Setup(): State {
       });
       newTodoTitle.value = "";
     },
-    toggleCompleted(index) {
+    toggleCompleted(index: number) {
       todos.value[index].completed = !todos.value[index].completed;
     },
-  });
+  };
 }
 
-function App(state: State) {
+type State = ReturnType<typeof Setup>;
+
+function App(state: State, props: { children: VueNode }) {
   return (
     <div>
-      <Test>Hey</Test>
+      <h1>Todos</h1>
       <input
         value={state.newTodoTitle.value}
-        onInput={(event) => {
-          state.newTodoTitle.value = event.target!.value!;
-        }}
-        onkeydown={(event) => {
+        onInput={(event) => (state.newTodoTitle.value = event.target.value)}
+        onKeydown={(event) => {
           if (event.key === "Enter") {
             state.addTodo();
           }
         }}
       />
-
       <ul>
         {state.todos.map((todo, index) => (
           <li key={index} onClick={() => state.toggleCompleted(index)}>

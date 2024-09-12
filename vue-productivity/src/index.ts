@@ -9,38 +9,38 @@ import {
   VNode,
 } from "vue";
 
+export * from "./jsx";
+
 export type VueNode = string | number | null | VNode;
 
-function createChildrenProxy(propsProxy: any, slots: any) {
-  let getChildren: any;
-
-  const slotsCount = Object.keys(slots).length;
-
-  if (slotsCount === 0) {
-    getChildren = () => null;
-  } else if (slotsCount === 1) {
-    getChildren = () => slots.default() || null;
-  } else {
-    const childrenGetters = {};
-
-    for (const key in slots) {
-      Object.defineProperty(childrenGetters, key, {
-        get() {
-          return slots[key]() || null;
-        },
-      });
-    }
-
-    getChildren = () => childrenGetters;
-  }
-
-  return new Proxy(propsProxy, {
-    get(target, p) {
-      if (p === "children") {
-        return getChildren();
+function createChildrenProxy(props: any, slots: any) {
+  const slotsProxy = new Proxy(slots, {
+    get(_, prop) {
+      if (typeof prop === "symbol" || !slots[prop]) {
+        return null;
       }
 
-      return target[p];
+      // We only support named slots as functions due to typing. Vue also warns about not using
+      // functions for named slots. We only return the slot here, cause calling it will implicitly
+      // call the underlying function passed for the named slot. Now typing is correct
+      return slots[prop];
+    },
+  });
+
+  Object.defineProperty(props, "children", {
+    get() {
+      const slotsKeys = Object.keys(slots);
+
+      if (slotsKeys.length === 0) {
+        return null;
+      }
+
+      if (slotsKeys.length === 1 && slotsKeys[0] === "default") {
+        // We call the "default" slot as "children" prop is expected to hold the value
+        return slots.default!();
+      }
+
+      return slotsProxy;
     },
   });
 }
@@ -91,11 +91,23 @@ export function createComponent(...args: any[]): any {
   throw new Error("Invalid definition");
 }
 
-export function createProvider<S extends Record<string, any>>() {
+export function createProvider<
+  P extends Record<string, any>,
+  S extends Record<string, any>
+>(setup: (props: P) => S): [(props: P) => S, () => S];
+export function createProvider<S extends Record<string, any>>(
+  setup: () => S
+): [() => S, () => S];
+export function createProvider<
+  P extends Record<string, any>,
+  S extends Record<string, any>
+>(setup: (props: P) => S) {
   const symbol = Symbol();
 
   return [
-    (state: S) => {
+    (props: P) => {
+      const state = setup(props);
+
       provide(symbol, state);
 
       return state;
